@@ -1,0 +1,20 @@
+{
+  "name": "@j.u.p.iter/json-database",
+  "version": "0.0.1",
+  "main": "dist/lib/index.js",
+  "description": "Simple, but powerful json database",
+  "repository": "git@github.com:j-u-p-iter/json-database.git",
+  "author": "Leontyev Kirill (j.u.p.iter) <pn79122821224@gmail.com> (http://j-u-p-iter.ru/)",
+  "license": "MIT",
+  "scripts": {
+    "commit": "jupiter-scripts precommit --allowJs",
+    "build": "jupiter-scripts build --module=CommonJS",
+    "start": "yarn run build --watch",
+    "lint": "jupiter-scripts lint --format codeFrame",
+    "lint:fix": "yarn run lint --fix",
+    "test": "jupiter-scripts test"
+  },
+  "devDependencies": {
+    "@j.u.p.iter/jupiter-scripts": "^1.17.0"
+  }
+}
