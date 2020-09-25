@@ -14,7 +14,7 @@ export class JsonDB {
   private value: DB;
 
   private serialize(data) {
-    return JSON.stringify(data);
+    return JSON.stringify(data, null, 2);
   }
 
   private deserialize(data) {
@@ -87,6 +87,38 @@ export class JsonDB {
 
   public doesCollectionExist(collectionName) {
     return this.getCollectionsArray().includes(collectionName);
+  }
+
+  public addCollection(collectionName: string): void {
+    if (this.doesCollectionExist(collectionName)) {
+      console.log(`A collection ${collectionName} already exists`);
+
+      return;
+    }
+
+    this.value[collectionName] = [];
+
+    this.writeIntoFile();
+  }
+
+  public removeCollection(collectionName) {
+    if (!this.doesCollectionExist(collectionName)) {
+      console.log(`A collection ${collectionName} does not exist`);
+
+      return;
+    }
+
+    delete this.value[collectionName];
+
+    this.writeIntoFile();
+  }
+
+  /**
+   * Returns all database data
+   *
+   */
+  public scan() {
+    return this.value;
   }
 
   /**
