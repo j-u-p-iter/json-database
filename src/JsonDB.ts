@@ -9,7 +9,7 @@ interface DB {
 
 export class JsonDB {
   private path: string;
-  private value: DB;
+  private value: DB = {};
 
   private serialize(data) {
     return JSON.stringify(data, null, 2);
@@ -26,8 +26,6 @@ export class JsonDB {
 
     return resultValue;
   }
-
-  private validatePath() {}
 
   /**
    * During an initialization step we store a content of a file into "this.value".
@@ -59,12 +57,19 @@ export class JsonDB {
     // ---- if there's no db.json file by this path we throw an error.
 
     if (fs.existsSync(this.path)) {
-      this.value = this.deserialize(fs.readFileSync(this.path));
+      this.wrapWithCollection(this.deserialize(fs.readFileSync(this.path)));
 
       return;
     }
 
     this.value = this.writeIntoFile();
+  }
+
+  private wrapWithCollection(data) {
+    Object.entries(data).forEach(([collectionName, collectionData]) => {
+      this.value[collectionName] = new Collection(...collectionData as any) 
+      console.log(this.value[collectionName].add)
+    });
   }
 
   private getCollectionsArray() {
@@ -77,11 +82,13 @@ export class JsonDB {
     this.init();
   }
 
-  public getCollection(collectionName: string) {
+  public getCollection(collectionName: string): Collection | undefined {
     if (!this.doesCollectionExist(collectionName)) {
       console.log(`A collection ${collectionName} does not exist.`);
       return;
     }
+
+    return this.value[collectionName];
   }
 
   /**
@@ -92,15 +99,20 @@ export class JsonDB {
     collectionName: string,
     data: T
   ): T {
-    if (!this.value[collectionName]) {
-      this.value[collectionName] = new Collection(collectionName);
+    if (!this.doesCollectionExist(collectionName)) {
+      this.createCollection(collectionName)
     }
 
-    this.value[collectionName].add(data);
+    console.log(this.getCollection(collectionName));
+    this.getCollection(collectionName)!.add(data);
 
     this.writeIntoFile();
 
     return data;
+  }
+
+  public createCollection(collectionName) {
+    this.value[collectionName] = new Collection();
   }
 
   public getAllCollections() {
@@ -125,7 +137,7 @@ export class JsonDB {
       return;
     }
 
-    this.value[collectionName] = new Collection(collectionName);
+    this.createCollection(collectionName);
 
     this.writeIntoFile();
   }
