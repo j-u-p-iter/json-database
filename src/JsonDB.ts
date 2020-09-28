@@ -67,8 +67,8 @@ export class JsonDB {
 
   private wrapWithCollection(data) {
     Object.entries(data).forEach(([collectionName, collectionData]) => {
-      this.value[collectionName] = new Collection(...collectionData as any) 
-      console.log(this.value[collectionName].add)
+      this.value[collectionName] = new Collection(...(collectionData as any));
+      console.log(this.value[collectionName].add);
     });
   }
 
@@ -100,7 +100,7 @@ export class JsonDB {
     data: T
   ): T {
     if (!this.doesCollectionExist(collectionName)) {
-      this.createCollection(collectionName)
+      this.createCollection(collectionName);
     }
 
     console.log(this.getCollection(collectionName));
