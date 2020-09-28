@@ -16,5 +16,8 @@
   },
   "devDependencies": {
     "@j.u.p.iter/jupiter-scripts": "^1.17.0"
+  },
+  "dependencies": {
+    "@j.u.p.iter/custom-error": "^1.0.1"
   }
 }

@@ -51,6 +51,18 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@j.u.p.iter/custom-error@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@j.u.p.iter/custom-error/-/custom-error-1.0.1.tgz#261f1b8bf956fd7758788c39e247e93a016ebecc"
+  integrity sha512-TgLs+ZN+kXv4ErvKMWDlJz8f7W/CRgrZU8J37H8WmKKb6Mai/m5PJKm52+rFmQAQ6rEcFMYBRiwOk/34twiF4w==
+  dependencies:
+    "@j.u.p.iter/http-status" "^1.2.1"
+
+"@j.u.p.iter/http-status@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@j.u.p.iter/http-status/-/http-status-1.2.1.tgz#fde5f1ab9a37657ef4fd9837fb14c5c30c3cfc40"
+  integrity sha512-iWFQDObv4fZ2LiCihdiF8SKSZR4nKsAKbBVttPIbuw6pGdWToHzWhB4MOJbv44uUv+v9/z5YLx0l7n/f6P2dzQ==
+
 "@j.u.p.iter/jupiter-scripts@^1.17.0":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@j.u.p.iter/jupiter-scripts/-/jupiter-scripts-1.17.0.tgz#3cc8fe0dc96652d6ea8173963cad2155c5feafd8"

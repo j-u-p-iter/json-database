@@ -1,0 +1,9 @@
+const db = JsonDB(); 
+
+db.collection('posts').create({
+  title: 'Some title',
+});
+
+db.collection('posts').find({
+  title: 'Some title',
+});

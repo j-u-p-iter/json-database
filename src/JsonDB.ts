@@ -1,16 +1,14 @@
 import fs from "fs";
+import path from "path";
 
-interface Row {
-  [key: string]: string | number;
-}
-
-interface Collection extends Array<Row> {}
+import { Collection } from "./Collection";
 
 interface DB {
-  [key: string]: Collection;
+  [collectionName: string]: Collection;
 }
 
 export class JsonDB {
+  private path: string;
   private value: DB;
 
   private serialize(data) {
@@ -24,24 +22,44 @@ export class JsonDB {
   private writeIntoFile() {
     const resultValue = this.value || {};
 
-    fs.writeFileSync(this.filePath, this.serialize(resultValue));
+    fs.writeFileSync(this.path, this.serialize(resultValue));
 
     return resultValue;
   }
 
+  private validatePath() {}
+
   /**
-   * During an initialization step we store a content of a file
-   *   into "this.value".
+   * During an initialization step we store a content of a file into "this.value".
    *
-   * The goal is not to read the file everytime we modify the
-   *   file data but only to write.
+   * The goal is not to read the file everytime we modify the file data but only to write.
    *
    * And if there's no file, related to the filePath, we create one.
    *
    */
   private init() {
-    if (fs.existsSync(this.filePath)) {
-      this.value = this.deserialize(fs.readFileSync(this.filePath));
+    // filePath is an optional param
+    //
+    // if there is no a path:
+    //
+    // - we search ./db.json (db.json file in the current working directory)
+    //
+    // -- if there is no db.json in the current directory we throw an error.
+    //
+    // if there is a path
+    //
+    // - we check if this path is valid (existsSync)
+    // --  if there's no such a path we throw an error
+    //
+    // -- if there is such a path
+    //
+    // --- if it is a .json file we use this file as a database.
+    // --- if it is a not .json file we throw an error.
+    // --- if it is a directory path - we search ./db.json file there.
+    // ---- if there's no db.json file by this path we throw an error.
+
+    if (fs.existsSync(this.path)) {
+      this.value = this.deserialize(fs.readFileSync(this.path));
 
       return;
     }
@@ -53,8 +71,17 @@ export class JsonDB {
     return Object.keys(this.value);
   }
 
-  constructor(private filePath: string) {
+  constructor(filePath?: string) {
+    this.path = path.resolve(process.cwd(), filePath);
+
     this.init();
+  }
+
+  public getCollection(collectionName: string) {
+    if (!this.doesCollectionExist(collectionName)) {
+      console.log(`A collection ${collectionName} does not exist.`);
+      return;
+    }
   }
 
   /**
@@ -65,9 +92,11 @@ export class JsonDB {
     collectionName: string,
     data: T
   ): T {
-    this.value[collectionName] = this.value[collectionName] || [];
+    if (!this.value[collectionName]) {
+      this.value[collectionName] = new Collection(collectionName);
+    }
 
-    this.value[collectionName].push(data);
+    this.value[collectionName].add(data);
 
     this.writeIntoFile();
 
@@ -96,7 +125,7 @@ export class JsonDB {
       return;
     }
 
-    this.value[collectionName] = [];
+    this.value[collectionName] = new Collection(collectionName);
 
     this.writeIntoFile();
   }
@@ -141,8 +170,10 @@ export class JsonDB {
         }
       );
 
-      // If all the params from "params" were found, the length of these arrays
-      // should be equal
+      /**
+       * If all the params from "params" were found, the length of these arrays should be equal
+       *
+       */
       return filteringResult.length === Object.keys(params).length;
     });
   }
