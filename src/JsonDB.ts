@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { getCallerPath } from '@j.u.p.iter/caller-path';
-import { SyntxError } from '@j.u.p.iter/custom-error';
+import { InvalidJsonError } from '@j.u.p.iter/custom-error';
 
 import { Collection } from "./Collection";
 
@@ -18,7 +18,11 @@ export class JsonDB {
   }
 
   private deserialize(data) {
-    return JSON.parse(data);
+    try {
+      return JSON.parse(data);
+    } catch(error) {
+      throw new InvalidJsonError(this.path) 
+    }
   }
 
   private writeIntoFile() {
