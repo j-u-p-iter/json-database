@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import { getCallerPath } from '@j.u.p.iter/caller-path';
+import { SyntxError } from '@j.u.p.iter/custom-error';
 
 import { Collection } from "./Collection";
 
@@ -20,22 +22,14 @@ export class JsonDB {
   }
 
   private writeIntoFile() {
-    const resultValue = this.value || {};
+    const resultValue = this.value;
 
     fs.writeFileSync(this.path, this.serialize(resultValue));
 
     return resultValue;
   }
 
-  /**
-   * During an initialization step we store a content of a file into "this.value".
-   *
-   * The goal is not to read the file everytime we modify the file data but only to write.
-   *
-   * And if there's no file, related to the filePath, we create one.
-   *
-   */
-  private init() {
+  //private validatePath() {
     // filePath is an optional param
     //
     // if there is no a path:
@@ -55,7 +49,17 @@ export class JsonDB {
     // --- if it is a not .json file we throw an error.
     // --- if it is a directory path - we search ./db.json file there.
     // ---- if there's no db.json file by this path we throw an error.
+  //}
 
+  /**
+   * During an initialization step we store a content of a file into "this.value".
+   *
+   * The goal is not to read the file everytime we modify the file data but only to write.
+   *
+   * And if there's no file, related to the filePath, we create one.
+   *
+   */
+  private init() {
     if (fs.existsSync(this.path)) {
       this.wrapWithCollection(this.deserialize(fs.readFileSync(this.path)));
 
@@ -77,7 +81,7 @@ export class JsonDB {
   }
 
   constructor(filePath?: string) {
-    this.path = path.resolve(process.cwd(), filePath);
+    this.path = path.resolve(getCallerPath(1).dirPath, filePath);
 
     this.init();
   }
@@ -103,7 +107,6 @@ export class JsonDB {
       this.createCollection(collectionName);
     }
 
-    console.log(this.getCollection(collectionName));
     this.getCollection(collectionName)!.add(data);
 
     this.writeIntoFile();

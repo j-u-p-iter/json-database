@@ -51,6 +51,11 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@j.u.p.iter/caller-path@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@j.u.p.iter/caller-path/-/caller-path-1.0.1.tgz#4d985a8b1f04d967499226ae097a8210e83bdf3b"
+  integrity sha512-Zn5G9xMgY+W0eTgcws+pe3tWVSViYHGGM70ThLS82aU/dWlSs2dD7qlUehFWDlhz0neAr1UywpBgNW0noz6mCQ==
+
 "@j.u.p.iter/custom-error@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@j.u.p.iter/custom-error/-/custom-error-1.0.1.tgz#261f1b8bf956fd7758788c39e247e93a016ebecc"
