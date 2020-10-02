@@ -11,4 +11,12 @@ describe('JsonDB', () => {
       expect(error instanceof InvalidJsonError).toBe(true);
     }
   });
+
+  describe.only('root directory does not contain db.json', () => {
+    it('creates db.json in the root dir', () => {
+      new JsonDB();
+
+      console.log(__dirname);
+    })
+  });
 });

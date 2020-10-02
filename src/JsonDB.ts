@@ -1,13 +1,15 @@
 import fs from "fs";
 import path from "path";
 import { getCallerPath } from '@j.u.p.iter/caller-path';
-import { InvalidJsonError } from '@j.u.p.iter/custom-error';
+import { InvalidJsonError, InvalidFileError } from '@j.u.p.iter/custom-error';
 
 import { Collection } from "./Collection";
 
 interface DB {
   [collectionName: string]: Collection;
 }
+
+const errorContext = { context: 'JsonDB' };
 
 export class JsonDB {
   private path: string;
@@ -21,16 +23,14 @@ export class JsonDB {
     try {
       return JSON.parse(data);
     } catch(error) {
-      throw new InvalidJsonError(this.path) 
+      throw new InvalidJsonError(this.path, errorContext) 
     }
   }
 
-  private writeIntoFile() {
-    const resultValue = this.value;
+  private writeIntoFile(filePath) {
+    fs.writeFileSync(filePath, this.serialize(this.value));
 
-    fs.writeFileSync(this.path, this.serialize(resultValue));
-
-    return resultValue;
+    return this.value;
   }
 
   //private validatePath() {
@@ -65,7 +65,33 @@ export class JsonDB {
    */
   private init() {
     if (fs.existsSync(this.path)) {
-      this.wrapWithCollection(this.deserialize(fs.readFileSync(this.path)));
+      const isFile = Boolean(path.basename(this.path)); 
+
+      if (isFile) {
+        const isJson = path.extname(this.path) === '.json';
+
+        if (isJson) {
+          this.wrapWithCollection(
+            this.deserialize(
+              fs.readFileSync(this.path)
+            )
+          );
+        } else {
+          throw new InvalidFileTypeError(path.extname(this.path), '.json')
+        }
+      } else {
+        const defaultFilePath = path.resolve(this.path, 'db.json');
+
+        if (fs.existsSync(defaultFilePath)) {
+          this.wrapWithCollection(
+            this.deserialize(
+              fs.readFileSync(defaultFilePath)
+            )
+          );
+        } else {
+          this.writeIntoFile(defaultFilePath);
+        }
+      }
 
       return;
     }
@@ -76,7 +102,6 @@ export class JsonDB {
   private wrapWithCollection(data) {
     Object.entries(data).forEach(([collectionName, collectionData]) => {
       this.value[collectionName] = new Collection(...(collectionData as any));
-      console.log(this.value[collectionName].add);
     });
   }
 
@@ -84,7 +109,7 @@ export class JsonDB {
     return Object.keys(this.value);
   }
 
-  constructor(filePath?: string) {
+  constructor(filePath: string = '') {
     this.path = path.resolve(getCallerPath(1).dirPath, filePath);
 
     this.init();

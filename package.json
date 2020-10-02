@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "@j.u.p.iter/caller-path": "^1.0.1",
-    "@j.u.p.iter/custom-error": "^1.2.0"
+    "@j.u.p.iter/custom-error": "^1.1.1"
   }
 }
