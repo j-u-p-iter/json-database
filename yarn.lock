@@ -56,10 +56,10 @@
   resolved "https://registry.yarnpkg.com/@j.u.p.iter/caller-path/-/caller-path-1.0.1.tgz#4d985a8b1f04d967499226ae097a8210e83bdf3b"
   integrity sha512-Zn5G9xMgY+W0eTgcws+pe3tWVSViYHGGM70ThLS82aU/dWlSs2dD7qlUehFWDlhz0neAr1UywpBgNW0noz6mCQ==
 
-"@j.u.p.iter/custom-error@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@j.u.p.iter/custom-error/-/custom-error-1.1.1.tgz#a27659add3c9e9536071be841b0b9d47aabdc9ad"
-  integrity sha512-W+jXtCYrbsaacWaQSlUrm8w0p289XQYaELhL0jaQWPV4lPp4E+yzu5d7ACamGSGC+9wXvSE02oi0Oc3hHtmq8w==
+"@j.u.p.iter/custom-error@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@j.u.p.iter/custom-error/-/custom-error-1.2.3.tgz#18a6e978ce0491a09837a58f28f8d694fc5ec0af"
+  integrity sha512-0Uo5FPrv5GswGsgf7P2VbjqwdSG1Z30+T3oZLw5dtLyFwA4NHag+51mzxh0yosxzzpmciqMEnrJnYM5+ZGMXbA==
   dependencies:
     "@j.u.p.iter/http-status" "^1.2.1"
 
