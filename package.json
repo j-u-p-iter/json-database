@@ -1,6 +1,6 @@
 {
   "name": "@j.u.p.iter/json-database",
-  "version": "0.0.1",
+  "version": "1.2.1",
   "main": "dist/lib/index.js",
   "description": "Simple, but powerful json database",
   "repository": "git@github.com:j-u-p-iter/json-database.git",
@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "@j.u.p.iter/caller-path": "^1.0.1",
-    "@j.u.p.iter/custom-error": "^1.1.1"
+    "@j.u.p.iter/custom-error": "^1.1.2"
   }
 }
