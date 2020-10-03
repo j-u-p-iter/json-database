@@ -1,7 +1,8 @@
 import { getCallerPath } from "@j.u.p.iter/caller-path";
 import {
   InvalidFileTypeError,
-  InvalidJsonError
+  InvalidJsonError,
+  InvalidPathError,
 } from "@j.u.p.iter/custom-error";
 import fs from "fs";
 import path from "path";
@@ -39,23 +40,8 @@ export class JsonDB {
   // private validatePath() {
   // filePath is an optional param
   //
-  // if there is no a path:
-  //
-  // - we search ./db.json (db.json file in the current working directory)
-  //
-  // -- if there is no db.json in the current directory we throw an error.
-  //
   // if there is a path
   //
-  // - we check if this path is valid (existsSync)
-  // --  if there's no such a path we throw an error
-  //
-  // -- if there is such a path
-  //
-  // --- if it is a .json file we use this file as a database.
-  // --- if it is a not .json file we throw an error.
-  // --- if it is a directory path - we search ./db.json file there.
-  // ---- if there's no db.json file by this path we throw an error.
   // }
 
   /**
@@ -72,21 +58,27 @@ export class JsonDB {
     if (isFile) {
       const isJson = path.extname(this.path) === ".json";
 
-      if (!fs.existsSync) {
-        this.writeIntoFile();
-      }
-
       if (isJson) {
-        this.wrapWithCollection(this.deserialize(fs.readFileSync(this.path)));
+        if (!fs.existsSync(this.path)) {
+          this.writeIntoFile();
+        } else {
+          this.wrapWithCollection(this.deserialize(fs.readFileSync(this.path)));
+        }
       } else {
         throw new InvalidFileTypeError(path.extname(this.path), ".json");
       }
     } else {
+      if (this.path && !fs.existsSync(this.path)) {
+        throw new InvalidPathError(this.path);
+      }
+
       const defaultFilePath = path.resolve(this.path, "db.json");
 
       if (fs.existsSync(defaultFilePath)) {
         this.wrapWithCollection(
-          this.deserialize(fs.readFileSync(defaultFilePath))
+          this.deserialize(
+            fs.readFileSync(defaultFilePath)
+          )
         );
       } else {
         this.writeIntoFile(defaultFilePath);

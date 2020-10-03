@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { InvalidJsonError, InvalidFileType } from '@j.u.p.iter/custom-error';
+import { InvalidJsonError, InvalidFileType, InvalidPathError } from '@j.u.p.iter/custom-error';
 
 import { JsonDB } from '..';
 
@@ -48,6 +48,12 @@ describe('new JsonDB(path)', () => {
       expect(db.scan()).toEqual({ posts: [] }); 
 
       fs.unlinkSync(path.resolve(__dirname, './db.json')); 
+    });
+  });
+
+  describe('if path is path to non-existent directory', () => {
+    it('throws error', () => {
+      expect(() => new JsonDB('./databases')).toThrowError(InvalidPathError);
     });
   });
 });
