@@ -15,7 +15,8 @@
     "test": "jupiter-scripts test"
   },
   "devDependencies": {
-    "@j.u.p.iter/jupiter-scripts": "^1.17.0"
+    "@j.u.p.iter/jupiter-scripts": "^1.17.0",
+    "recursive-copy": "^2.0.11"
   },
   "dependencies": {
     "@j.u.p.iter/caller-path": "^1.0.1",

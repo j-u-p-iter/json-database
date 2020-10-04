@@ -77,9 +77,25 @@ export class JsonDB {
     }
   }
 
+  private proxyCollection(collection) {
+    return new Proxy(collection, {
+      get: (collection, prop) => {
+        if (prop === 'add') {
+          return (...args) => {
+            collection.add(...args);
+
+            this.writeIntoFile();
+          }
+        }
+
+        return collection[prop];
+      }
+    });
+  }
+
   private wrapWithCollection(data) {
     Object.entries(data).forEach(([collectionName, collectionData]) => {
-      this.value[collectionName] = new Collection(...(collectionData as any));
+      this.value[collectionName] = this.proxyCollection(new Collection(...(collectionData as any)));
     });
   }
 
