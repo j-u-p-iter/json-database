@@ -77,15 +77,15 @@ export class JsonDB {
     }
   }
 
-  private proxyCollection(collection) {
-    return new Proxy(collection, {
+  private proxyCollection(collectionInstance) {
+    return new Proxy(collectionInstance, {
       get: (collection, prop) => {
-        if (prop === 'add') {
+        if (prop === "add") {
           return (...args) => {
             collection.add(...args);
 
             this.writeIntoFile();
-          }
+          };
         }
 
         return collection[prop];
@@ -95,7 +95,9 @@ export class JsonDB {
 
   private wrapWithCollection(data) {
     Object.entries(data).forEach(([collectionName, collectionData]) => {
-      this.value[collectionName] = this.proxyCollection(new Collection(...(collectionData as any)));
+      this.value[collectionName] = this.proxyCollection(
+        new Collection(...(collectionData as any))
+      );
     });
   }
 
@@ -148,8 +150,6 @@ export class JsonDB {
     }
 
     this.getCollection(collectionName)!.add(data);
-
-    this.writeIntoFile();
 
     return data;
   }
@@ -212,28 +212,17 @@ export class JsonDB {
    * Finds row in the collection .
    *
    */
-  public read(
+  public readCollection(
     collectionName: string,
     params?: { [key: string]: string | number }
   ) {
-    if (!params) {
-      return this.value[collectionName];
+    if (this.doesCollectionExist(collectionName)) {
+      console.log(`A collection ${collectionName} already exists`);
+
+      return;
     }
 
-    return this.value[collectionName].filter(collectionRow => {
-      // Find in eash row params from "params";
-      const filteringResult = Object.entries(collectionRow).filter(
-        ([key, value]) => {
-          return params[key] === value;
-        }
-      );
-
-      /**
-       * If all the params from "params" were found, the length of these arrays should be equal
-       *
-       */
-      return filteringResult.length === Object.keys(params).length;
-    });
+    return this.getCollection(collectionName)!.read(params);
   }
 
   /**

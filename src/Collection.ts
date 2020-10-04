@@ -2,7 +2,7 @@ export interface Document {
   [key: string]: string | number;
 }
 
-export class Collection extends Array {
+export class Collection extends Array<Document> {
   constructor(...args) {
     super(...args);
 
@@ -30,8 +30,33 @@ export class Collection extends Array {
    * });
    *
    */
-  public add(document): Collection {
+  public add(document: Document): Collection {
     this.push(document);
+
+    return this;
+  }
+
+  /**
+   * Finds row in the collection .
+   *
+   */
+  public read(params?: Partial<Document>): Collection {
+    if (!params) {
+      return this;
+    }
+
+    this.filter(document => {
+      // Find in eash row params from "params";
+      const filteringResult = Object.entries(document).filter(
+        ([key, value]) => params[key] === value
+      );
+
+      /**
+       * If all the params from "params" were found, the length of these arrays should be equal
+       *
+       */
+      return filteringResult.length === Object.keys(params).length;
+    });
 
     return this;
   }
