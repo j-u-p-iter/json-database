@@ -2,7 +2,7 @@ import { getCallerPath } from "@j.u.p.iter/caller-path";
 import {
   InvalidFileTypeError,
   InvalidJsonError,
-  InvalidPathError,
+  InvalidPathError
 } from "@j.u.p.iter/custom-error";
 import fs from "fs";
 import path from "path";
@@ -37,13 +37,6 @@ export class JsonDB {
     return this.value;
   }
 
-  // private validatePath() {
-  // filePath is an optional param
-  //
-  // if there is a path
-  //
-  // }
-
   /**
    * During an initialization step we store a content of a file into "this.value".
    *
@@ -76,9 +69,7 @@ export class JsonDB {
 
       if (fs.existsSync(defaultFilePath)) {
         this.wrapWithCollection(
-          this.deserialize(
-            fs.readFileSync(defaultFilePath)
-          )
+          this.deserialize(fs.readFileSync(defaultFilePath))
         );
       } else {
         this.writeIntoFile(defaultFilePath);
@@ -102,10 +93,27 @@ export class JsonDB {
     this.init();
   }
 
-  public getCollection(collectionName: string): Collection | undefined {
+  /**
+   * Retrieves collection's data from db.
+   *
+   * @class
+   *
+   * @param {string} collectionName A name of the collection to retrieve data from.
+   *
+   * @returns {Array} Collection of data.
+   *
+   * @example
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const postsCollection = db.getCollection('posts');
+   *
+   */
+
+  public getCollection(collectionName: string): Collection | null {
     if (!this.doesCollectionExist(collectionName)) {
       console.log(`A collection ${collectionName} does not exist.`);
-      return;
+
+      return null;
     }
 
     return this.value[collectionName];
@@ -131,6 +139,9 @@ export class JsonDB {
   }
 
   public createCollection(collectionName) {
+    // need to add proxy for the collection
+    // not to call writeIntoFile in all places
+    // we create/update collections data
     this.value[collectionName] = new Collection();
   }
 
