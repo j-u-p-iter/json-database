@@ -170,11 +170,12 @@ describe('JsonDB', () => {
 
             db.create('users', { name: 'Some name', age: 25 });
 
-            const user = db.create('users', { name: 'Another name', age: 40 });
+            const anotherUser = db.create('users', { name: 'Another name', age: 40 });
+            const oneMoreUser = db.create('users', { name: 'One more user name', age: 40 });
 
             const userDocuments = db.read('users', { age: 40 });
 
-            expect(userDocuments).toEqual([user]);
+            expect(userDocuments).toEqual([anotherUser, oneMoreUser]);
           });
         });
 

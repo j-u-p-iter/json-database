@@ -1,4 +1,4 @@
-import { Document } from './types';
+import { Document } from "./types";
 
 export class Collection extends Array<Document> {
   constructor(...args) {
@@ -13,7 +13,7 @@ export class Collection extends Array<Document> {
    *
    * @class
    *
-   * @param {string} document Data as object (document) to insert into the collection.
+   * @param {Object} document Data (document) to insert into the collection.
    *
    * @returns {Collection} Collection of a data.
    *
@@ -35,8 +35,35 @@ export class Collection extends Array<Document> {
   }
 
   /**
-   * Finds row in the collection .
+   * Reads a collection with or without params.
    *
+   * @class
+   *
+   * @param {Object} [params] Searching params.
+   *
+   * @returns {Collection} Filtered collection of data according to params.
+   *
+   * @example
+   * // without params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const postsCollection = db.getCollection('posts');
+   *
+   * const allPostsCollection = postsCollection.read();
+   *
+   * // Contains all posts in collection
+   * console.log(allPostsCollection);
+   *
+   * @example
+   * // with params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const postsCollection = db.getCollection('posts');
+   *
+   * const postsWithSomeTitle = postsCollection.read({ title: 'Some title' });
+   *
+   * // Contains all posts with "Some title" title
+   * console.log(postsWithSomeTitle);
    */
   public read(params?: Partial<Document>): Collection {
     if (!params) {
@@ -49,10 +76,7 @@ export class Collection extends Array<Document> {
         ([key, value]) => params[key] === value
       );
 
-      /**
-       * If all the params from "params" were found, the length of these arrays should be equal
-       *
-       */
+      // If all the params from "params" were found, the length of these arrays should be equal
       return filteringResult.length === Object.keys(params).length;
     }) as Collection;
   }

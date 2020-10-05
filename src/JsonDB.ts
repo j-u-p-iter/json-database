@@ -139,13 +139,28 @@ export class JsonDB {
   }
 
   /**
-   * Adds a document into the collection
+   * Adds a document into a collection.
+   *
+   * @class
+   *
+   * @param {string} collectionName Name of a collection to add the data to.
+   * @param {Object} document Data (document) to insert into the collection.
+   *
+   * @returns {Object} Added document.
+   *
+   * @example
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const addedPost = db.create('posts', {
+   *   title: "Some title",
+   *   description: "Some description",
+   * });
+   *
+   * console.log(addedPost);
+   * // { title: "Some title", description: "Some description" }
    *
    */
-  public create<T extends Document>(
-    collectionName: string,
-    document: T
-  ): T {
+  public create<T extends Document>(collectionName: string, document: T): T {
     if (!this.doesCollectionExist(collectionName)) {
       this.createCollection(collectionName);
     }
@@ -210,10 +225,7 @@ export class JsonDB {
    * Finds row in the collection .
    *
    */
-  public read(
-    collectionName: string,
-    params?: Partial<Document>
-  ) {
+  public read(collectionName: string, params?: Partial<Document>) {
     if (!this.doesCollectionExist(collectionName)) {
       console.log(`A collection ${collectionName} does not exist.`);
 
