@@ -11,7 +11,7 @@ export class Collection extends Array<Document> {
   /**
    * Adds a document into a collection.
    *
-   * @class
+   * @method
    *
    * @param {Object} document Data (document) to insert into the collection.
    *
@@ -37,7 +37,7 @@ export class Collection extends Array<Document> {
   /**
    * Reads a collection with or without params.
    *
-   * @class
+   * @method
    *
    * @param {Object} [params] Searching params.
    *

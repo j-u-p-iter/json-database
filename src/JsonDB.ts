@@ -141,7 +141,7 @@ export class JsonDB {
   /**
    * Adds a document into a collection.
    *
-   * @class
+   * @method
    *
    * @param {string} collectionName Name of a collection to add the data to.
    * @param {Object} document Data (document) to insert into the collection.
@@ -222,10 +222,34 @@ export class JsonDB {
   }
 
   /**
-   * Finds row in the collection .
+   * Reads data from collection with or without params.
    *
+   * @class
+   *
+   * @param {string} collectionName Name of a collection to read the data from.
+   * @param {Object} [params] Searching params.
+   *
+   * @returns {Collection} Filtered collection of data according to the params.
+   *
+   * @example
+   * // without params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const allPostsCollection = db.read('posts');
+   *
+   * // Contains all posts in collection
+   * console.log(allPostsCollection);
+   *
+   * @example
+   * // with params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const postsWithSomeTitle = db.read('posts', { title: 'Some title' });
+   *
+   * // Contains all posts with "Some title" title
+   * console.log(postsWithSomeTitle);
    */
-  public read(collectionName: string, params?: Partial<Document>) {
+  public read<T extends Document>(collectionName: string, params?: Partial<T>) {
     if (!this.doesCollectionExist(collectionName)) {
       console.log(`A collection ${collectionName} does not exist.`);
 
