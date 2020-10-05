@@ -1,8 +1,28 @@
 import { Document } from "./types";
 
 export class Collection extends Array<Document> {
-  private findDocuments(params: Partial<Document>): Collection {
-    return (this.filter(document => {
+  /**
+   * Resets the collection and adds newDocuments
+   * into it
+   *
+   */
+  private renewCollection(newDocuments: Document[]): void {
+    this.resetCollection();
+    this.push(...newDocuments);
+  }
+
+  private resetCollection() {
+    this.length = 0;
+  }
+
+  /**
+   * Finds documents by params object.
+   * Document is considered to be founded if all props from params
+   * are equal to appropriate properties of the document
+   *
+   */
+  private findDocuments(params: Partial<Document>): Document[] {
+    return this.filter(document => {
       // Find in eash row params from "params";
       const filteringResult = Object.entries(document).filter(
         ([key, value]) => params[key] === value
@@ -10,7 +30,7 @@ export class Collection extends Array<Document> {
 
       // If all the params from "params" were found, the length of these arrays should be equal
       return filteringResult.length === Object.keys(params).length;
-    }) as unknown) as Collection;
+    });
   }
 
   constructor(...args) {
@@ -77,7 +97,7 @@ export class Collection extends Array<Document> {
    * // Contains all posts with "Some title" title
    * console.log(postsWithSomeTitle);
    */
-  public read(params?: Partial<Document>): Collection {
+  public read(params?: Partial<Document>): Document[] {
     if (!params) {
       return this;
     }
@@ -85,13 +105,56 @@ export class Collection extends Array<Document> {
     return this.findDocuments(params);
   }
 
-  public delete(params?: Partial<Document>): boolean | null {
+  /**
+   * Deletes documents from a collection by params object.
+   *
+   * @method
+   *
+   * @param {Object} [params] Searching params.
+   *
+   * @returns {Document[]} An array of removed documents.
+   *
+   * @example
+   * // without params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * // removes all posts
+   * const removedPosts = db.delete('posts');
+   *
+   * // Contains removed documents from the collection "posts"
+   * console.log(removedPosts);
+   *
+   * @example
+   * // with params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const removedPosts = db.delete('posts', { title: "Some title" });
+   *
+   * // Contains removed documents from a collection "posts"
+   * console.log(removedPosts);
+   *
+   */
+  public delete(params?: Partial<Document>): Document[] {
+    if (!params) {
+      const documentsToRemove = [...this];
+
+      this.resetCollection();
+
+      return documentsToRemove;
+    }
+
     const documentsToDelete = this.findDocuments(params);
 
     if (!documentsToDelete.length) {
-      return false;
+      return [];
     }
 
-    return null;
+    const updatedCollection = this.filter(
+      document => !documentsToDelete.includes(document)
+    );
+
+    this.renewCollection(updatedCollection);
+
+    return documentsToDelete;
   }
 }

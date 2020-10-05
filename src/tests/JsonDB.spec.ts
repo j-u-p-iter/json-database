@@ -209,31 +209,43 @@ describe('JsonDB', () => {
     });
   });
 
-  describe.only('db.delete(collectionName, params)', () => {
+  describe('db.delete(collectionName, params)', () => {
     describe('if a collection with the collectionName does not exist', () => {
       it('returns null', () => {
         const db = createDB();
 
-        const userDocuments = db.read('users');
+        const result = db.delete('users');
 
-        expect(userDocuments).toEqual(null);
+        expect(result).toEqual(null);
       });
     });
 
     describe('if a collection with the collectionName exists', () => {
       describe('with params', () => {
         describe('if there is a data according to the params', () => {
-          it('returns an appropriate data', () => {
+          it('removes related data and returns it', () => {
             const db = createDB();
 
             db.create('users', { name: 'Some name', age: 25 });
+            db.create('users', { name: 'Another name', age: 40 });
+            db.create('users', { name: 'One more name', age: 40 });
 
-            const anotherUser = db.create('users', { name: 'Another name', age: 40 });
-            const oneMoreUser = db.create('users', { name: 'One more user name', age: 40 });
+            const removedDocuments = db.delete('users', { name: 'One more name', age: 40 });
 
-            const userDocuments = db.read('users', { age: 40 });
+            expect(db.read('users')).toEqual([
+              { name: 'Some name', age: 25 },
+              { name: 'Another name', age: 40 },
+            ]);
 
-            expect(userDocuments).toEqual([anotherUser, oneMoreUser]);
+            expect(removedDocuments).toEqual([{ name: 'One more name', age: 40 }]);
+
+            checkDBFileContent({
+              posts: [],
+              users: [
+                { name: 'Some name', age: 25 },
+                { name: 'Another name', age: 40 },
+              ]
+            });
           });
         });
 
@@ -244,24 +256,32 @@ describe('JsonDB', () => {
             db.create('users', { name: 'Some name', age: 25 });
             db.create('users', { name: 'Another name', age: 40 });
 
-            const userDocuments = db.read('users', { age: 12 });
+            const removedDocuments = db.delete('users', { age: 12 });
 
-            expect(userDocuments).toEqual([]);
+            checkDBFileContent({
+              posts: [],
+              users: [
+                { name: 'Some name', age: 25 },
+                { name: 'Another name', age: 40 },
+              ]
+            });
+
+            expect(removedDocuments).toEqual([]);
           });
         });
       });
 
       describe('without params', () => {
-        it('returns the whole collection', () => {
+        it('removes all documents from a collection', () => {
           const db = createDB();
 
           const firstUser = db.create('users', { name: 'Some name', age: 25 });
           const secondUser = db.create('users', { name: 'Another name', age: 40 });
 
-          const userDocuments = db.read('users');
+          const removedDocuments = db.delete('users');
           const expectedCollection = [firstUser, secondUser];
 
-          expect(userDocuments).toEqual(expectedCollection);
+          expect(removedDocuments).toEqual(expectedCollection);
         });
       });
     });

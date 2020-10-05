@@ -81,11 +81,13 @@ export class JsonDB {
   private proxyCollection(collectionInstance) {
     return new Proxy(collectionInstance, {
       get: (collection, prop) => {
-        if (prop === "add") {
+        if (prop === "add" || prop === "delete") {
           return (...args) => {
-            collection.add(...args);
+            const result = collection[prop](...args);
 
             this.writeIntoFile();
+
+            return result;
           };
         }
 
