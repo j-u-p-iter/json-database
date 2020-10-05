@@ -208,4 +208,62 @@ describe('JsonDB', () => {
       });
     });
   });
+
+  describe.only('db.delete(collectionName, params)', () => {
+    describe('if a collection with the collectionName does not exist', () => {
+      it('returns null', () => {
+        const db = createDB();
+
+        const userDocuments = db.read('users');
+
+        expect(userDocuments).toEqual(null);
+      });
+    });
+
+    describe('if a collection with the collectionName exists', () => {
+      describe('with params', () => {
+        describe('if there is a data according to the params', () => {
+          it('returns an appropriate data', () => {
+            const db = createDB();
+
+            db.create('users', { name: 'Some name', age: 25 });
+
+            const anotherUser = db.create('users', { name: 'Another name', age: 40 });
+            const oneMoreUser = db.create('users', { name: 'One more user name', age: 40 });
+
+            const userDocuments = db.read('users', { age: 40 });
+
+            expect(userDocuments).toEqual([anotherUser, oneMoreUser]);
+          });
+        });
+
+        describe('if there is no data according to the params', () => {
+          it('returns an empty collection', () => {
+            const db = createDB();
+
+            db.create('users', { name: 'Some name', age: 25 });
+            db.create('users', { name: 'Another name', age: 40 });
+
+            const userDocuments = db.read('users', { age: 12 });
+
+            expect(userDocuments).toEqual([]);
+          });
+        });
+      });
+
+      describe('without params', () => {
+        it('returns the whole collection', () => {
+          const db = createDB();
+
+          const firstUser = db.create('users', { name: 'Some name', age: 25 });
+          const secondUser = db.create('users', { name: 'Another name', age: 40 });
+
+          const userDocuments = db.read('users');
+          const expectedCollection = [firstUser, secondUser];
+
+          expect(userDocuments).toEqual(expectedCollection);
+        });
+      });
+    });
+  });
 })

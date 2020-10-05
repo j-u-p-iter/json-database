@@ -1,6 +1,18 @@
 import { Document } from "./types";
 
 export class Collection extends Array<Document> {
+  private findDocuments(params: Partial<Document>): Collection {
+    return (this.filter(document => {
+      // Find in eash row params from "params";
+      const filteringResult = Object.entries(document).filter(
+        ([key, value]) => params[key] === value
+      );
+
+      // If all the params from "params" were found, the length of these arrays should be equal
+      return filteringResult.length === Object.keys(params).length;
+    }) as unknown) as Collection;
+  }
+
   constructor(...args) {
     super(...args);
 
@@ -70,14 +82,16 @@ export class Collection extends Array<Document> {
       return this;
     }
 
-    return this.filter(document => {
-      // Find in eash row params from "params";
-      const filteringResult = Object.entries(document).filter(
-        ([key, value]) => params[key] === value
-      );
+    return this.findDocuments(params);
+  }
 
-      // If all the params from "params" were found, the length of these arrays should be equal
-      return filteringResult.length === Object.keys(params).length;
-    }) as Collection;
+  public delete(params?: Partial<Document>): boolean | null {
+    const documentsToDelete = this.findDocuments(params);
+
+    if (!documentsToDelete.length) {
+      return false;
+    }
+
+    return null;
   }
 }

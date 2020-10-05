@@ -251,8 +251,6 @@ export class JsonDB {
    */
   public read<T extends Document>(collectionName: string, params?: Partial<T>) {
     if (!this.doesCollectionExist(collectionName)) {
-      console.log(`A collection ${collectionName} does not exist.`);
-
       return null;
     }
 
@@ -260,14 +258,22 @@ export class JsonDB {
   }
 
   /**
-   * Adds into a row or extends a row with data, that is passed as first argument of object type.
+   * Adds into a row or extends a row with data,
+   * that is passed as first argument of object type.
    *
    */
   public update() {}
 
   /**
-   * Removes a row from the collection by some creteria, that has an object type.
+   * Removes a row from the collection by some creteria,
+   * that has an object type.
    *
    */
-  public delete() {}
+  public delete(collectionName, params) {
+    if (!this.doesCollectionExist(collectionName)) {
+      return null;
+    }
+
+    return this.getCollection(collectionName)!.delete(params);
+  }
 }
