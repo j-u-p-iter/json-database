@@ -1,6 +1,4 @@
-export interface Document {
-  [key: string]: string | number;
-}
+import { Document } from './types';
 
 export class Collection extends Array<Document> {
   constructor(...args) {
@@ -45,7 +43,7 @@ export class Collection extends Array<Document> {
       return this;
     }
 
-    this.filter(document => {
+    return this.filter(document => {
       // Find in eash row params from "params";
       const filteringResult = Object.entries(document).filter(
         ([key, value]) => params[key] === value
@@ -56,8 +54,6 @@ export class Collection extends Array<Document> {
        *
        */
       return filteringResult.length === Object.keys(params).length;
-    });
-
-    return this;
+    }) as Collection;
   }
 }

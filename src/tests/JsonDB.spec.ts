@@ -6,6 +6,22 @@ import { InvalidJsonError, InvalidFileType, InvalidPathError } from '@j.u.p.iter
 import { JsonDB } from '..';
 
 describe('JsonDB', () => {
+  let DB_PATH;
+  let createDB;
+  let checkDBFileContent;
+  
+  beforeAll(() => {
+    DB_PATH = './__fixtures/db.json';
+
+    createDB = (path = DB_PATH) => {
+      return new JsonDB(path);
+    };
+
+    checkDBFileContent = (content) => {
+      expect(JSON.parse(String(fs.readFileSync(path.resolve(__dirname, DB_PATH))))).toEqual(content);
+    };
+  });
+
   beforeEach(async () => {
     await copy(path.resolve(__dirname, 'fixtures'), path.resolve(__dirname, '__fixtures'));
   });
@@ -17,11 +33,11 @@ describe('JsonDB', () => {
   describe('new JsonDB(path)', () => {
     describe('if path is a path to json file', () => {
       it('throws an error if a json data is not valid', () => {
-        expect(() => new JsonDB('./__fixtures/invalidData.json')).toThrowError(InvalidJsonError);
+        expect(() => createDB('./__fixtures/invalidData.json')).toThrowError(InvalidJsonError);
       });
 
       it('initialize database with content from json file', () => {
-        const db = new JsonDB('./__fixtures/db.json')
+        const db = createDB();
 
         expect(db.scan()).toEqual({ posts: [] });
       });
@@ -29,12 +45,12 @@ describe('JsonDB', () => {
 
     describe('if path is a path to a not json file', () => {
       it('throws error', () => {
-        expect(() => new JsonDB('./__fixtures/db.txt')).toThrowError(InvalidFileType);
+        expect(() => createDB('./__fixtures/db.txt')).toThrowError(InvalidFileType);
       });
 
       it('does not create such a file if it does not exist', () => {
         try {
-          new JsonDB('./__fixtures/someFile.txt')
+          createDB('./__fixtures/someFile.txt')
         } catch(error) {}
 
         expect(fs.existsSync(path.resolve(__dirname, './__fixtures/someFile.txt'))).toBe(false); 
@@ -70,13 +86,13 @@ describe('JsonDB', () => {
 
   describe('db.getCollection(collectionName)', () => {
     it('returns null if a collection does not exist', () => {
-      const db = new JsonDB('./__fixtures/db.json');
+      const db = createDB();
 
       expect(db.getCollection('users')).toBeNull();
     });
 
     it('returns collection if there is such a collection in a db', () => {
-      const db = new JsonDB('./__fixtures/db.json');
+      const db = createDB();
 
       expect(db.getCollection('posts')).toEqual([]);
     });
@@ -84,7 +100,7 @@ describe('JsonDB', () => {
 
   describe('collection.add(collectionData)', () => {
     it('inserts data into the collection', () => {
-      const db = new JsonDB('./__fixtures/db.json');
+      const db = createDB();
       const newPost = { title: "Some title", description: "Some description" };
 
       const postsCollection = db.getCollection('posts');
@@ -94,8 +110,100 @@ describe('JsonDB', () => {
 
       expect(postsCollection).toEqual([newPost]);
 
-      expect(JSON.parse(String(fs.readFileSync(path.resolve(__dirname, './__fixtures/db.json'))))).toEqual({
-        posts: [newPost]
+      checkDBFileContent({ posts: [newPost] });
+    });
+  });
+
+  describe('db.create(collectionName, data)', () => {
+    describe('if a collection with the collectionName exists', () => {
+      it('inserts document into the collection with collectionName', () => {
+        const db = createDB();
+        const newPost = { title: "Some title", description: "Some description" };
+
+        const postsCollection = db.getCollection('posts');
+        expect(postsCollection).toEqual([]);
+    
+        db.create('posts', { title: 'Some title', description: 'Some description' });
+
+        expect(postsCollection).toEqual([newPost]);
+
+        checkDBFileContent({ posts: [newPost] });
+      });
+    });
+
+    describe('if a collection with the collectionName does not exist', () => {
+      it('creates a collection and insterts a document into this collection', () => {
+        const db = createDB();
+        const newUser = { name: "Some name", role: 'admin' };
+
+        let usersCollection = db.getCollection('users');
+        expect(usersCollection).toBeNull();
+    
+        const newDocument = db.create('users', newUser);
+
+        expect(newDocument).toEqual(newUser);
+
+        usersCollection = db.getCollection('users');
+        expect(usersCollection).toEqual([newUser]);
+
+        checkDBFileContent({ posts: [], users: [newUser] });
+      });
+    });
+  });
+
+  describe('db.read(collectionName, params)', () => {
+    describe('if a collection with the collectionName does not exist', () => {
+      it('returns null', () => {
+        const db = createDB();
+
+        const userDocuments = db.read('users');
+
+        expect(userDocuments).toEqual(null);
+      });
+    });
+
+    describe('if a collection with the collectionName exists', () => {
+      describe('with params', () => {
+        describe('if there is a data according to the params', () => {
+          it('returns an appropriate data', () => {
+            const db = createDB();
+
+            db.create('users', { name: 'Some name', age: 25 });
+
+            const user = db.create('users', { name: 'Another name', age: 40 });
+
+            const userDocuments = db.read('users', { age: 40 });
+
+            expect(userDocuments).toEqual([user]);
+          });
+        });
+
+        describe('if there is no data according to the params', () => {
+          it('returns an empty collection', () => {
+            const db = createDB();
+
+            db.create('users', { name: 'Some name', age: 25 });
+            db.create('users', { name: 'Another name', age: 40 });
+
+            const userDocuments = db.read('users', { age: 12 });
+
+            expect(userDocuments).toEqual([]);
+          });
+        });
+      });
+
+      describe('without params', () => {
+        it('returns the whole collection', () => {
+          const db = createDB();
+
+          const firstUser = db.create('users', { name: 'Some name', age: 25 });
+          const secondUser = db.create('users', { name: 'Another name', age: 40 });
+
+          const userDocuments = db.read('users');
+          const expectedCollection = [firstUser, secondUser];
+
+          expect(userDocuments).toEqual(expectedCollection);
+        });
       });
     });
   });

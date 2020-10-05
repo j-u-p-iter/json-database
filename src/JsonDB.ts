@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 
 import { Collection } from "./Collection";
+import { Document } from "./types";
 
 interface DB {
   [collectionName: string]: Collection;
@@ -138,27 +139,24 @@ export class JsonDB {
   }
 
   /**
-   * Creates a row in the collection
+   * Adds a document into the collection
    *
    */
-  public create<T extends { [key: string]: string | number }>(
+  public create<T extends Document>(
     collectionName: string,
-    data: T
+    document: T
   ): T {
     if (!this.doesCollectionExist(collectionName)) {
       this.createCollection(collectionName);
     }
 
-    this.getCollection(collectionName)!.add(data);
+    this.getCollection(collectionName)!.add(document);
 
-    return data;
+    return document;
   }
 
   public createCollection(collectionName) {
-    // need to add proxy for the collection
-    // not to call writeIntoFile in all places
-    // we create/update collections data
-    this.value[collectionName] = new Collection();
+    this.value[collectionName] = this.proxyCollection(new Collection());
   }
 
   public getAllCollections() {
@@ -204,7 +202,7 @@ export class JsonDB {
    * Returns all database data
    *
    */
-  public scan() {
+  public scan(): DB {
     return this.value;
   }
 
@@ -212,14 +210,14 @@ export class JsonDB {
    * Finds row in the collection .
    *
    */
-  public readCollection(
+  public read(
     collectionName: string,
-    params?: { [key: string]: string | number }
+    params?: Partial<Document>
   ) {
-    if (this.doesCollectionExist(collectionName)) {
-      console.log(`A collection ${collectionName} already exists`);
+    if (!this.doesCollectionExist(collectionName)) {
+      console.log(`A collection ${collectionName} does not exist.`);
 
-      return;
+      return null;
     }
 
     return this.getCollection(collectionName)!.read(params);
