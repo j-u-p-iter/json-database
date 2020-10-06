@@ -300,7 +300,7 @@ describe('JsonDB', () => {
 
     describe('if a collection with the collectionName exists', () => {
       describe('with params', () => {
-        describe.only('if there is a data according to the params', () => {
+        describe('if there is a data according to the params', () => {
           it('removes related data and returns it', () => {
             const db = createDB();
 
@@ -336,7 +336,7 @@ describe('JsonDB', () => {
             db.create('users', { name: 'Some name', age: 25 });
             db.create('users', { name: 'Another name', age: 40 });
 
-            const removedDocuments = db.delete('users', { age: 12 });
+            const updatedDocuments = db.update('users', { name: 'New name' }, { age: 12 });
 
             checkDBFileContent({
               posts: [],
@@ -346,22 +346,21 @@ describe('JsonDB', () => {
               ]
             });
 
-            expect(removedDocuments).toEqual([]);
+            expect(updatedDocuments).toEqual([]);
           });
         });
       });
 
       describe('without params', () => {
-        it('removes all documents from a collection', () => {
+        it('updates all documents from a collection', () => {
           const db = createDB();
 
-          const firstUser = db.create('users', { name: 'Some name', age: 25 });
-          const secondUser = db.create('users', { name: 'Another name', age: 40 });
+          db.create('users', { name: 'Some name', age: 25 });
+          db.create('users', { name: 'Another name', age: 40 });
 
-          const removedDocuments = db.delete('users');
-          const expectedCollection = [firstUser, secondUser];
+          const updatedDocuments = db.update('users', { name: 'Common name' });
 
-          expect(removedDocuments).toEqual(expectedCollection);
+          expect(updatedDocuments).toEqual([{ name: 'Common name', age: 25 }, { name: 'Common name', age: 40 }]);
         });
       });
     });
