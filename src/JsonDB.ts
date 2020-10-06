@@ -267,8 +267,33 @@ export class JsonDB {
   public update() {}
 
   /**
-   * Removes a row from the collection by some creteria,
-   * that has an object type.
+   * Deletes documents from a collection by params object.
+   *
+   * @method
+   *
+   * @param {Object} [params] Searching params.
+   *
+   * @returns {Document[]} An array of removed documents.
+   *
+   * @example
+   * // without params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * // removes all posts
+   * const removedPosts = db.delete('posts');
+   *
+   * // Contains removed documents from the collection "posts"
+   * console.log(removedPosts);
+   *
+   * @example
+   * // with params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * // removes posts with "Some title" title
+   * const removedPosts = db.delete('posts', { title: "Some title" });
+   *
+   * // Contains removed documents from a collection "posts"
+   * console.log(removedPosts);
    *
    */
   public delete(collectionName, params) {

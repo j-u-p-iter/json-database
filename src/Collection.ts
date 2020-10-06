@@ -118,8 +118,10 @@ export class Collection extends Array<Document> {
    * // without params
    * const db = new JsonDB('./db/db.json');
    *
+   * const postsCollection = db.getCollection('posts');
+   *
    * // removes all posts
-   * const removedPosts = db.delete('posts');
+   * const removedPosts = postsCollection.delete();
    *
    * // Contains removed documents from the collection "posts"
    * console.log(removedPosts);
@@ -128,7 +130,10 @@ export class Collection extends Array<Document> {
    * // with params
    * const db = new JsonDB('./db/db.json');
    *
-   * const removedPosts = db.delete('posts', { title: "Some title" });
+   * const postsCollection = db.getCollection('posts');
+   *
+   * // removes posts with a title "Some title" from a collection "posts"
+   * const removedPosts = postsCollection.delete({ title: "Some title" });
    *
    * // Contains removed documents from a collection "posts"
    * console.log(removedPosts);
