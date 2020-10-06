@@ -81,7 +81,7 @@ export class JsonDB {
   private proxyCollection(collectionInstance) {
     return new Proxy(collectionInstance, {
       get: (collection, prop) => {
-        if (prop === "add" || prop === "delete") {
+        if (prop === "add" || prop === "delete" || prop === "update") {
           return (...args) => {
             const result = collection[prop](...args);
 

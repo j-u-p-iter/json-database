@@ -216,7 +216,18 @@ export class Collection extends Array<Document> {
       };
     });
 
-    this.renewCollection(updatedDocuments);
+    const updatedCollection = this.map(document => {
+      if (documentsToUpdate.includes(document)) {
+        return {
+          ...document,
+          ...dataToUpdate
+        };
+      } else {
+        return document;
+      }
+    });
+
+    this.renewCollection(updatedCollection);
 
     return updatedDocuments;
   }
