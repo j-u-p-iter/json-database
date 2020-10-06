@@ -260,11 +260,50 @@ export class JsonDB {
   }
 
   /**
-   * Adds into a row or extends a row with data,
-   * that is passed as first argument of object type.
+   * Updates documents in a collection founded by params object with dataToUpdate.
+   *
+   * @method
+   *
+   * @param {Object} collectionName A collection name to update documents in.
+   * @param {Object} dataToUpdate Data to update founded documents.
+   * @param {Object} [params] Searching params.
+   *
+   * @returns {Document[]} An array of removed documents.
+   *
+   * @example
+   * // without params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * // updates all posts
+   * const updatedPosts = db.update('posts', { title: "New title" });
+   *
+   * // Contains updated documents from the collection "posts"
+   * console.log(updatedPosts);
+   *
+   *
+   * @example
+   * // with params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * // updates posts with a title "Some title" with new title "New title"
+   * const updatedPosts = db.update('posts', { title: "New title" }, { title: "Some title" });
+   *
+   * // Contains updated documents from a collection "posts"
+   * console.log(updatedPosts);
    *
    */
-  public update() {}
+
+  public update<T extends Document>(
+    collectionName: string,
+    dataToUpdate: Partial<T>,
+    params: Partial<T>
+  ) {
+    if (!this.doesCollectionExist(collectionName)) {
+      return null;
+    }
+
+    return this.getCollection(collectionName).update(dataToUpdate, params);
+  }
 
   /**
    * Deletes documents from a collection by params object.

@@ -162,4 +162,62 @@ export class Collection extends Array<Document> {
 
     return documentsToDelete;
   }
+
+  /**
+   * Updates documents in a collection founded by params object with dataToUpdate.
+   *
+   * @method
+   *
+   * @param {Object} dataToUpdate Data to update founded documents.
+   * @param {Object} [params] Searching params.
+   *
+   * @returns {Document[]} An array of removed documents.
+   *
+   * @example
+   * // without params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const postsCollection = db.getCollection('posts');
+   *
+   * // updates all posts
+   * const updatedPosts = postsCollection.update({ title: "New title" });
+   *
+   * // Contains updated documents from the collection "posts"
+   * console.log(removedPosts);
+   *
+   *
+   * @example
+   * // with params
+   * const db = new JsonDB('./db/db.json');
+   *
+   * const postsCollection = db.getCollection('posts');
+   *
+   * // updates posts with a title "Some title" with new title "New title"
+   * const updatedPosts = postsCollection.update({ title: "New title" }, { title: "Some title" });
+   *
+   * // Contains updated documents from a collection "posts"
+   * console.log(updatedPosts);
+   *
+   */
+  public update(
+    dataToUpdate: Partial<Document>,
+    params: Partial<Document>
+  ): Document[] {
+    const documentsToUpdate = params ? this.findDocuments(params) : [...this];
+
+    if (!documentsToUpdate.length) {
+      return [];
+    }
+
+    const updatedDocuments = documentsToUpdate.map(document => {
+      return {
+        ...document,
+        ...dataToUpdate
+      };
+    });
+
+    this.renewCollection(updatedDocuments);
+
+    return updatedDocuments;
+  }
 }
